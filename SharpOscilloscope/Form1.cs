@@ -18,6 +18,9 @@ namespace SharpOscilloscope
             checkBox2.Checked = true;
             comboBox1.SelectedIndex = 3;
             comboBox2.SelectedIndex = 4;
+
+            //Trigger mode
+            comboBox3.SelectedIndex = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -104,26 +107,31 @@ namespace SharpOscilloscope
                 case 0: //1ms
                     {
                         signalDisplayControl1.SetTimeScale(0.001f);
+                        signalDisplayControl1.SetInterval(3000);
                         break;
                     }
                 case 1: //10ms
                     {
                         signalDisplayControl1.SetTimeScale(0.010f);
+                        signalDisplayControl1.SetInterval(3000);
                         break;
                     }
                 case 2: //100ms
                     {
                         signalDisplayControl1.SetTimeScale(0.100f);
+                        signalDisplayControl1.SetInterval(3000);
                         break;
                     }
                 case 3: //1sec
                     {
                         signalDisplayControl1.SetTimeScale(1.000f);
+                        signalDisplayControl1.SetInterval(3000);
                         break;
                     }
                 case 4: //10sec
                     {
                         signalDisplayControl1.SetTimeScale(10.000f);
+                        signalDisplayControl1.SetInterval(15000);
                         break;
                     }
                 default:
@@ -173,6 +181,38 @@ namespace SharpOscilloscope
                 default:
                     break;
             }
+        }
+
+        //Mode
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox3.SelectedIndex)
+            {
+                case 0: //None
+                    {
+                        signalDisplayControl1.SetTriggerBypass(true);
+                        break;
+                    }
+                case 1: //Rising Edge
+                    {
+                        signalDisplayControl1.SetTriggerBypass(false);
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        //Type
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //signalDisplayControl1.tr
+        }
+
+        //Trigger level
+        private void button2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

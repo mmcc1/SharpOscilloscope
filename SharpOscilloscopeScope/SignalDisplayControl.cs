@@ -21,6 +21,32 @@
         private float elapsedTime = 0f;                   // Elapsed time for incoming data
         private int totalSamplesToDisplay = 0;            // Total samples to display based on time range
 
+        //Trigger support
+        private TriggerSystem triggerSystem = new TriggerSystem();
+        private bool preTriggered = false;
+
+        // Pre-trigger and post-trigger buffers (based on time)
+        private int preTriggerSamples = 0;
+        private int postTriggerSamples = 0;
+        private float preTriggerTime = 0.01f; // Default 10ms of pre-trigger data
+
+
+        // Cursor variables
+        private bool showTimeCursor = false;
+        private bool showAmplitudeCursor = false;
+        private float timeCursorPosition = 0f;   // X-coordinate
+        private float amplitudeCursorPosition = 0f; // Y-coordinate
+
+        //private bool bypassTriggerCheck = false; // Flag to bypass trigger checks
+        private System.Timers.Timer holdTimerChannel1;
+        private bool holdingWaveformChannel1 = false;
+        private int currentSampleIndexChannel1 = 0;  // Tracks where new data should be appended
+
+        private System.Timers.Timer holdTimerChannel2;
+        private bool holdingWaveformChannel2 = false;
+        private int currentSampleIndexChannel2 = 0;  // Tracks where new data should be appended
+
+
         public SignalDisplayControl()
         {
             InitializeComponent();
@@ -28,26 +54,24 @@
             ResizeRedraw = true;
             BackColor = Color.Black;
             SetTimeScale(1f);
+
+            // Initialize the hold timer with a 3-second interval
+            holdTimerChannel1 = new System.Timers.Timer(3000);
+            holdTimerChannel1.Elapsed += (s, e) => EndHoldChannel1();
+            holdTimerChannel1.AutoReset = false; // We want a single execution, no repeat
+
+            holdTimerChannel2 = new System.Timers.Timer(3000);
+            holdTimerChannel2.Elapsed += (s, e) => EndHoldChannel2();
+            holdTimerChannel2.AutoReset = false; // We want a single execution, no repeat
         }
 
-        // Method to update signal data for left channel
-        public void UpdateLeftChannelData(float[] newSignalData)
+        public void SetTriggerBypass(bool bypass)
         {
-            lock (dataLock)
-            {
-                AppendSignalData(ref leftChannelData, newSignalData);
-            }
-            Invalidate();  // Redraw the control
-        }
-
-        // Method to update signal data for right channel
-        public void UpdateRightChannelData(float[] newSignalData)
-        {
-            lock (dataLock)
-            {
-                AppendSignalData(ref rightChannelData, newSignalData);
-            }
-            Invalidate();  // Redraw the control
+            //bypassTriggerCheck = bypass;
+            if (bypass)
+                triggerSystem.TriggerMode = TriggerMode.None;
+            else
+                triggerSystem.TriggerMode = TriggerMode.Auto;
         }
 
         private void AppendSignalData(ref float[] channelData, float[] newData)
@@ -78,60 +102,6 @@
                 Array.Copy(newData, 0, channelData, shiftAmount, newDataLength);
             }
         }
-
-        /*
-        private void AppendSignalData(ref float[] channelData, float[] newData)
-        {
-            int newDataLength = newData.Length;
-            int remainingSamplesToFill = totalSamplesToDisplay - channelData.Length;
-
-            if (remainingSamplesToFill <= 0)
-            {
-                // If the channel data already contains enough samples, we don't append anything
-                return;
-            }
-
-            // If newData has more samples than needed to fill the buffer, only take what is needed
-            if (newDataLength >= remainingSamplesToFill)
-            {
-                // Create a new array that combines the old and new data, up to totalSamplesToDisplay
-                float[] updatedData = new float[totalSamplesToDisplay];
-                Array.Copy(channelData, updatedData, channelData.Length); // Copy existing data
-                Array.Copy(newData, 0, updatedData, channelData.Length, remainingSamplesToFill); // Copy only what's needed from newData
-                channelData = updatedData;
-            }
-            else
-            {
-                // Append the entire newData array to channelData
-                float[] updatedData = new float[channelData.Length + newDataLength];
-                Array.Copy(channelData, updatedData, channelData.Length); // Copy existing data
-                Array.Copy(newData, 0, updatedData, channelData.Length, newDataLength); // Append new data
-                channelData = updatedData;
-            }
-        }
-
-
-        // Append incoming data to the current buffer
-        private void AppendSignalData(ref float[] channelData, float[] newData)
-        {
-            int newDataLength = newData.Length;
-            int remainingData = totalSamplesToDisplay - channelData.Length;
-
-            if (newDataLength >= remainingData)
-            {
-                // If we have enough data to display the entire time period
-                channelData = newData[..totalSamplesToDisplay];
-            }
-            else
-            {
-                // Append new data to the existing buffer
-                float[] updatedData = new float[channelData.Length + newDataLength];
-                Array.Copy(channelData, updatedData, channelData.Length);
-                Array.Copy(newData, 0, updatedData, channelData.Length, newDataLength);
-                channelData = updatedData;
-            }
-        }
-        */
 
         // Method to set the time scale (time range to display) from 1ms to 10s
         public void SetTimeScale(float timeRangeInSeconds)
@@ -164,14 +134,6 @@
         {
             displayRightChannel = enable;
             Invalidate();  // Redraw to reflect the change
-        }
-
-        // Custom paint method to draw the waveform and grid
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            DrawGrid(e.Graphics);  // Draw the time/voltage grid first
-            DrawSignal(e.Graphics);  // Then draw the waveforms
         }
 
         // Method to draw the time/voltage grid
@@ -268,6 +230,290 @@
 
                 g.DrawLine(pen, x1, y1, x2, y2);
             }
+        }
+
+        //############### Trigger Support ###############
+        public void SetTriggerLevel(float level)
+        {
+            triggerSystem.TriggerLevelChannel1 = level;
+        }
+
+        public void SetPreTrigger(float time)
+        {
+            preTriggerSamples = (int)(time * sampleRate);
+        }
+
+        public void SetPostTrigger(float time)
+        {
+            postTriggerSamples = (int)(time * sampleRate);
+        }
+
+        public void UpdateLeftChannelData(float[] newSignalData)
+        {
+            lock (dataLock)
+            {
+                int samplesPerScreen = (int)(sampleRate * timeScale); // Total samples to display on the screen
+                bool triggered = false;
+                int triggerIndex = -1;
+
+                switch (triggerSystem.TriggerMode)
+                {
+                    case TriggerMode.None:
+                        // Smoothly scroll the waveform when there's no trigger mode
+                        AppendSignalData(ref leftChannelData, newSignalData);
+                        ScrollWaveformChannel1(samplesPerScreen);
+                        break;
+
+                    case TriggerMode.Auto:
+                        // Check if a trigger occurred
+                        for (int i = 1; i < newSignalData.Length; i++)
+                        {
+                            if (newSignalData[i] >= triggerSystem.TriggerLevelChannel1 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel1)
+                            {
+                                triggerIndex = i;
+                                triggered = true;
+                                break;
+                            }
+                        }
+
+                        if (triggered && triggerIndex != -1 && !holdingWaveformChannel1)
+                        {
+                            // Align waveform to the left after the trigger
+                            AlignWaveformToLeftChannel1(triggerIndex, samplesPerScreen, newSignalData);
+                            triggerSystem.ResetTriggerChannel1(); // Reset for next event
+
+                            // Start hold timer to prevent overwriting new data for 3 seconds
+                            holdingWaveformChannel1 = true;
+                            holdTimerChannel1.Start();
+                        }
+                        else if (holdingWaveformChannel1)
+                        {
+                            // While holding the waveform, append new data progressively
+                            int spaceAvailable = samplesPerScreen - currentSampleIndexChannel1;
+                            int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
+
+                            if (samplesToAdd > 0)
+                            {
+                                Array.Copy(newSignalData, 0, leftChannelData, currentSampleIndexChannel1, samplesToAdd);
+                                currentSampleIndexChannel1 += samplesToAdd;
+                            }
+                        }
+                        else
+                        {
+                            // Scroll the waveform smoothly if not holding
+                            AppendSignalData(ref leftChannelData, newSignalData);
+                            ScrollWaveformChannel1(samplesPerScreen);
+                        }
+
+                        break;
+                    case TriggerMode.Normal:
+                        // Add logic for normal mode
+                        break;
+                    case TriggerMode.Single:
+                        // Add logic for single mode
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Refresh the control to display the updated waveform
+            Invalidate();
+        }
+
+        // Method to end the hold period
+        private void EndHoldChannel1()
+        {
+            holdingWaveformChannel1 = false; // Allow new data to be processed
+            Invalidate(); // Redraw the waveform after hold ends
+        }
+
+        private void EndHoldChannel2()
+        {
+            holdingWaveformChannel2 = false; // Allow new data to be processed
+            Invalidate(); // Redraw the waveform after hold ends
+        }
+
+        private void AlignWaveformToLeftChannel1(int triggerIndex, int samplesPerScreen, float[] newSignalData)
+        {
+            // Create a buffer for the full screen
+            leftChannelData = new float[samplesPerScreen];
+
+            // Number of samples after the trigger
+            int samplesAfterTrigger = newSignalData.Length - triggerIndex;
+
+            // Copy data starting from the trigger point
+            int samplesToCopy = Math.Min(samplesAfterTrigger, samplesPerScreen);
+            Array.Copy(newSignalData, triggerIndex, leftChannelData, 0, samplesToCopy);
+
+            // The rest of the screen will be filled progressively with new data
+            currentSampleIndexChannel1 = samplesToCopy; // Keep track of where the next data should be appended
+        }
+
+        private void AlignWaveformToLeftChannel2(int triggerIndex, int samplesPerScreen, float[] newSignalData)
+        {
+            // Create a buffer for the full screen
+            rightChannelData = new float[samplesPerScreen];
+
+            // Number of samples after the trigger
+            int samplesAfterTrigger = newSignalData.Length - triggerIndex;
+
+            // Copy data starting from the trigger point
+            int samplesToCopy = Math.Min(samplesAfterTrigger, samplesPerScreen);
+            Array.Copy(newSignalData, triggerIndex, rightChannelData, 0, samplesToCopy);
+
+            // The rest of the screen will be filled progressively with new data
+            currentSampleIndexChannel2 = samplesToCopy; // Keep track of where the next data should be appended
+        }
+
+
+        // Handles smooth scrolling when no trigger is detected or in bypass mode
+        private void ScrollWaveformChannel1(int samplesPerScreen)
+        {
+            if (leftChannelData.Length > samplesPerScreen)
+            {
+                // Truncate old data, retain only the most recent samples to fit the screen
+                leftChannelData = leftChannelData.Skip(leftChannelData.Length - samplesPerScreen).ToArray();
+            }
+        }
+
+        private void ScrollWaveformChannel2(int samplesPerScreen)
+        {
+            if (rightChannelData.Length > samplesPerScreen)
+            {
+                // Truncate old data, retain only the most recent samples to fit the screen
+                rightChannelData = rightChannelData.Skip(rightChannelData.Length - samplesPerScreen).ToArray();
+            }
+        }
+
+        public void UpdateRightChannelData(float[] newSignalData)
+        {
+            lock (dataLock)
+            {
+                int samplesPerScreen = (int)(sampleRate * timeScale); // Total samples to display on the screen
+                bool triggered = false;
+                int triggerIndex = -1;
+
+                switch (triggerSystem.TriggerMode)
+                {
+                    case TriggerMode.None:
+                        // Smoothly scroll the waveform when there's no trigger mode
+                        AppendSignalData(ref rightChannelData, newSignalData);
+                        ScrollWaveformChannel2(samplesPerScreen);
+                        break;
+
+                    case TriggerMode.Auto:
+                        // Check if a trigger occurred
+                        for (int i = 1; i < newSignalData.Length; i++)
+                        {
+                            if (newSignalData[i] >= triggerSystem.TriggerLevelChannel2 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel2)
+                            {
+                                triggerIndex = i;
+                                triggered = true;
+                                break;
+                            }
+                        }
+
+                        if (triggered && triggerIndex != -1 && !holdingWaveformChannel2)
+                        {
+                            // Align waveform to the left after the trigger
+                            AlignWaveformToLeftChannel2(triggerIndex, samplesPerScreen, newSignalData);
+                            triggerSystem.ResetTriggerChannel2(); // Reset for next event
+
+                            // Start hold timer to prevent overwriting new data for 3 seconds
+                            holdingWaveformChannel2 = true;
+                            holdTimerChannel2.Start();
+                        }
+                        else if (holdingWaveformChannel2)
+                        {
+                            // While holding the waveform, append new data progressively
+                            int spaceAvailable = samplesPerScreen - currentSampleIndexChannel2;
+                            int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
+
+                            if (samplesToAdd > 0)
+                            {
+                                Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                currentSampleIndexChannel2 += samplesToAdd;
+                            }
+                        }
+                        else
+                        {
+                            // Scroll the waveform smoothly if not holding
+                            AppendSignalData(ref rightChannelData, newSignalData);
+                            ScrollWaveformChannel2(samplesPerScreen);
+                        }
+
+                        break;
+                    case TriggerMode.Normal:
+                        // Add logic for normal mode
+                        break;
+                    case TriggerMode.Single:
+                        // Add logic for single mode
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Refresh the control to display the updated waveform
+            Invalidate();
+        }
+
+        // Handle appending pre-trigger data
+        private void AppendPreTriggerData(ref float[] channelData, float[] newData, int triggerIndex)
+        {
+            int preTriggerIndex = Math.Max(triggerIndex - preTriggerSamples, 0);
+            float[] preTriggerData = newData[preTriggerIndex..triggerIndex];
+            AppendSignalData(ref channelData, preTriggerData);
+        }
+
+        // Draw the time and amplitude cursors
+        private void DrawCursors(Graphics g)
+        {
+            Pen cursorPen = new Pen(Color.Green, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dot };
+            Brush cursorBrush = new SolidBrush(Color.White);
+
+            if (showTimeCursor)
+            {
+                int xPos = (int)(timeCursorPosition * ClientSize.Width);
+                g.DrawLine(cursorPen, xPos, 0, xPos, ClientSize.Height);
+                g.DrawString($"{timeCursorPosition:F3}s", this.Font, cursorBrush, xPos + 5, ClientSize.Height - 20);
+            }
+
+            if (showAmplitudeCursor)
+            {
+                int yPos = (int)(amplitudeCursorPosition * ClientSize.Height);
+                g.DrawLine(cursorPen, 0, yPos, ClientSize.Width, yPos);
+                g.DrawString($"{amplitudeCursorPosition:F3}V", this.Font, cursorBrush, 5, yPos - 20);
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            DrawGrid(e.Graphics);
+            DrawSignal(e.Graphics);
+            DrawCursors(e.Graphics);  // Draw cursors over the signal
+        }
+
+        public void SetTimeCursor(float position)
+        {
+            showTimeCursor = true;
+            timeCursorPosition = position;
+            Invalidate();
+        }
+
+        public void SetAmplitudeCursor(float position)
+        {
+            showAmplitudeCursor = true;
+            amplitudeCursorPosition = position;
+            Invalidate();
+        }
+
+        public void SetInterval(int interval)
+        {
+            holdTimerChannel1.Interval = interval;
+            holdTimerChannel2.Interval = interval;
         }
     }
 }

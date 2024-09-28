@@ -36,6 +36,13 @@
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             splitContainer1 = new SplitContainer();
+            groupBox2 = new GroupBox();
+            label5 = new Label();
+            textBox1 = new TextBox();
+            label4 = new Label();
+            comboBox4 = new ComboBox();
+            comboBox3 = new ComboBox();
+            label3 = new Label();
             groupBox1 = new GroupBox();
             comboBox2 = new ComboBox();
             comboBox1 = new ComboBox();
@@ -45,12 +52,14 @@
             checkBox1 = new CheckBox();
             button1 = new Button();
             signalDisplayControl1 = new SharpOscilloscopeScope.SignalDisplayControl();
+            button2 = new Button();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -113,6 +122,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(groupBox2);
             splitContainer1.Panel1.Controls.Add(groupBox1);
             splitContainer1.Panel1.Controls.Add(checkBox2);
             splitContainer1.Panel1.Controls.Add(checkBox1);
@@ -124,6 +134,77 @@
             splitContainer1.Size = new Size(1170, 664);
             splitContainer1.SplitterDistance = 390;
             splitContainer1.TabIndex = 2;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(button2);
+            groupBox2.Controls.Add(label5);
+            groupBox2.Controls.Add(textBox1);
+            groupBox2.Controls.Add(label4);
+            groupBox2.Controls.Add(comboBox4);
+            groupBox2.Controls.Add(comboBox3);
+            groupBox2.Controls.Add(label3);
+            groupBox2.Location = new Point(12, 193);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(358, 117);
+            groupBox2.TabIndex = 12;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Triggers";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(29, 77);
+            label5.Name = "label5";
+            label5.Size = new Size(34, 15);
+            label5.TabIndex = 5;
+            label5.Text = "Level";
+            // 
+            // textBox1
+            // 
+            textBox1.Location = new Point(93, 75);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(124, 23);
+            textBox1.TabIndex = 4;
+            textBox1.Text = "30.0";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(24, 49);
+            label4.Name = "label4";
+            label4.Size = new Size(31, 15);
+            label4.TabIndex = 3;
+            label4.Text = "Type";
+            // 
+            // comboBox4
+            // 
+            comboBox4.FormattingEnabled = true;
+            comboBox4.Items.AddRange(new object[] { "Rising Edge", "Falling Edge", "Level" });
+            comboBox4.Location = new Point(93, 46);
+            comboBox4.Name = "comboBox4";
+            comboBox4.Size = new Size(121, 23);
+            comboBox4.TabIndex = 2;
+            comboBox4.SelectedIndexChanged += comboBox4_SelectedIndexChanged;
+            // 
+            // comboBox3
+            // 
+            comboBox3.FormattingEnabled = true;
+            comboBox3.Items.AddRange(new object[] { "None", "Auto", "Normal", "Single" });
+            comboBox3.Location = new Point(93, 16);
+            comboBox3.Name = "comboBox3";
+            comboBox3.Size = new Size(121, 23);
+            comboBox3.TabIndex = 1;
+            comboBox3.SelectedIndexChanged += comboBox3_SelectedIndexChanged;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(24, 19);
+            label3.Name = "label3";
+            label3.Size = new Size(38, 15);
+            label3.TabIndex = 0;
+            label3.Text = "Mode";
             // 
             // groupBox1
             // 
@@ -181,9 +262,9 @@
             checkBox2.AutoSize = true;
             checkBox2.Location = new Point(12, 57);
             checkBox2.Name = "checkBox2";
-            checkBox2.Size = new Size(107, 19);
+            checkBox2.Size = new Size(111, 19);
             checkBox2.TabIndex = 2;
-            checkBox2.Text = "Hide Channel 2";
+            checkBox2.Text = "Show Channel 2";
             checkBox2.UseVisualStyleBackColor = true;
             checkBox2.CheckedChanged += checkBox2_CheckedChanged;
             // 
@@ -192,9 +273,9 @@
             checkBox1.AutoSize = true;
             checkBox1.Location = new Point(12, 32);
             checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(107, 19);
+            checkBox1.Size = new Size(111, 19);
             checkBox1.TabIndex = 1;
-            checkBox1.Text = "Hide Channel 1";
+            checkBox1.Text = "Show Channel 1";
             checkBox1.UseVisualStyleBackColor = true;
             checkBox1.CheckedChanged += checkBox1_CheckedChanged;
             // 
@@ -217,6 +298,16 @@
             signalDisplayControl1.Size = new Size(776, 664);
             signalDisplayControl1.TabIndex = 0;
             // 
+            // button2
+            // 
+            button2.Location = new Point(223, 74);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 6;
+            button2.Text = "Set";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -237,6 +328,8 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ResumeLayout(false);
@@ -262,5 +355,13 @@
         private ComboBox comboBox1;
         private Label label2;
         private Label label1;
+        private GroupBox groupBox2;
+        private ComboBox comboBox4;
+        private ComboBox comboBox3;
+        private Label label3;
+        private Label label5;
+        private TextBox textBox1;
+        private Label label4;
+        private Button button2;
     }
 }
