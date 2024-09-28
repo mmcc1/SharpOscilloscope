@@ -12,7 +12,7 @@ namespace SharpOscilloscopeScope
     internal class TriggerSystem
     {
         public TriggerType TriggerType { get; set; } = TriggerType.Edge;
-        public TriggerMode TriggerMode { get; set; } = TriggerMode.Auto;
+        public TriggerMode TriggerMode { get; set; } = TriggerMode.None;
         public float TriggerLevelChannel1 { get; set; } = 0.3f;
         public float TriggerLevelChannel2 { get; set; } = 0.3f;
         public bool TriggerOnRisingEdge { get; set; } = true;

@@ -63,15 +63,42 @@
             holdTimerChannel2 = new System.Timers.Timer(3000);
             holdTimerChannel2.Elapsed += (s, e) => EndHoldChannel2();
             holdTimerChannel2.AutoReset = false; // We want a single execution, no repeat
+
+            triggerSystem.TriggerMode = TriggerMode.None;
         }
 
-        public void SetTriggerBypass(bool bypass)
+        public void SetMode(int mode)
         {
+            switch(mode)
+            {
+                case 0:
+                    {
+                        triggerSystem.TriggerMode = TriggerMode.None;
+                        break;
+                    }
+                case 1:
+                    {
+                        triggerSystem.TriggerMode = TriggerMode.Auto;
+                        break;
+                    }
+                case 2:
+                    {
+                        triggerSystem.TriggerMode = TriggerMode.Normal;
+                        break;
+                    }
+                case 3:
+                    {
+                        triggerSystem.TriggerMode = TriggerMode.Single;
+                        break;
+                    }
+                default:
+                    break;
+            }
             //bypassTriggerCheck = bypass;
-            if (bypass)
-                triggerSystem.TriggerMode = TriggerMode.None;
-            else
-                triggerSystem.TriggerMode = TriggerMode.Auto;
+            //if (bypass)
+            //    triggerSystem.TriggerMode = TriggerMode.None;
+            //else
+            //    triggerSystem.TriggerMode = TriggerMode.Auto;
         }
 
         private void AppendSignalData(ref float[] channelData, float[] newData)
@@ -307,8 +334,43 @@
 
                         break;
                     case TriggerMode.Normal:
-                        // Add logic for normal mode
-                        break;
+                        {
+                            // Check if a trigger occurred
+                            for (int i = 1; i < newSignalData.Length; i++)
+                            {
+                                if (newSignalData[i] >= triggerSystem.TriggerLevelChannel1 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel1)
+                                {
+                                    triggerIndex = i;
+                                    triggered = true;
+                                    break;
+                                }
+                            }
+
+                            if (triggered && triggerIndex != -1 && !holdingWaveformChannel1)
+                            {
+                                // Align waveform to the left after the trigger
+                                AlignWaveformToLeftChannel1(triggerIndex, samplesPerScreen, newSignalData);
+                                triggerSystem.ResetTriggerChannel1(); // Reset for next event
+
+                                // Start hold timer to prevent overwriting new data for 3 seconds
+                                holdingWaveformChannel1 = true;
+                                holdTimerChannel1.Start();
+                            }
+                            else if (holdingWaveformChannel1)
+                            {
+                                // While holding the waveform, append new data progressively
+                                int spaceAvailable = samplesPerScreen - currentSampleIndexChannel1;
+                                int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
+
+                                if (samplesToAdd > 0)
+                                {
+                                    Array.Copy(newSignalData, 0, leftChannelData, currentSampleIndexChannel1, samplesToAdd);
+                                    currentSampleIndexChannel1 += samplesToAdd;
+                                }
+                            }
+
+                            break;
+                        }
                     case TriggerMode.Single:
                         // Add logic for single mode
                         break;
@@ -397,55 +459,94 @@
                 switch (triggerSystem.TriggerMode)
                 {
                     case TriggerMode.None:
-                        // Smoothly scroll the waveform when there's no trigger mode
-                        AppendSignalData(ref rightChannelData, newSignalData);
-                        ScrollWaveformChannel2(samplesPerScreen);
-                        break;
-
-                    case TriggerMode.Auto:
-                        // Check if a trigger occurred
-                        for (int i = 1; i < newSignalData.Length; i++)
                         {
-                            if (newSignalData[i] >= triggerSystem.TriggerLevelChannel2 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel2)
-                            {
-                                triggerIndex = i;
-                                triggered = true;
-                                break;
-                            }
-                        }
-
-                        if (triggered && triggerIndex != -1 && !holdingWaveformChannel2)
-                        {
-                            // Align waveform to the left after the trigger
-                            AlignWaveformToLeftChannel2(triggerIndex, samplesPerScreen, newSignalData);
-                            triggerSystem.ResetTriggerChannel2(); // Reset for next event
-
-                            // Start hold timer to prevent overwriting new data for 3 seconds
-                            holdingWaveformChannel2 = true;
-                            holdTimerChannel2.Start();
-                        }
-                        else if (holdingWaveformChannel2)
-                        {
-                            // While holding the waveform, append new data progressively
-                            int spaceAvailable = samplesPerScreen - currentSampleIndexChannel2;
-                            int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
-
-                            if (samplesToAdd > 0)
-                            {
-                                Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
-                                currentSampleIndexChannel2 += samplesToAdd;
-                            }
-                        }
-                        else
-                        {
-                            // Scroll the waveform smoothly if not holding
+                            // Smoothly scroll the waveform when there's no trigger mode
                             AppendSignalData(ref rightChannelData, newSignalData);
                             ScrollWaveformChannel2(samplesPerScreen);
+                            break;
                         }
+                    case TriggerMode.Auto:
+                        {
+                            // Check if a trigger occurred
+                            for (int i = 1; i < newSignalData.Length; i++)
+                            {
+                                if (newSignalData[i] >= triggerSystem.TriggerLevelChannel2 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel2)
+                                {
+                                    triggerIndex = i;
+                                    triggered = true;
+                                    break;
+                                }
+                            }
 
-                        break;
+                            if (triggered && triggerIndex != -1 && !holdingWaveformChannel2)
+                            {
+                                // Align waveform to the left after the trigger
+                                AlignWaveformToLeftChannel2(triggerIndex, samplesPerScreen, newSignalData);
+                                triggerSystem.ResetTriggerChannel2(); // Reset for next event
+
+                                // Start hold timer to prevent overwriting new data for 3 seconds
+                                holdingWaveformChannel2 = true;
+                                holdTimerChannel2.Start();
+                            }
+                            else if (holdingWaveformChannel2)
+                            {
+                                // While holding the waveform, append new data progressively
+                                int spaceAvailable = samplesPerScreen - currentSampleIndexChannel2;
+                                int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
+
+                                if (samplesToAdd > 0)
+                                {
+                                    Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                    currentSampleIndexChannel2 += samplesToAdd;
+                                }
+                            }
+                            else
+                            {
+                                // Scroll the waveform smoothly if not holding
+                                AppendSignalData(ref rightChannelData, newSignalData);
+                                ScrollWaveformChannel2(samplesPerScreen);
+                            }
+
+                            break;
+                        }
                     case TriggerMode.Normal:
-                        // Add logic for normal mode
+                        {
+                            // Check if a trigger occurred
+                            for (int i = 1; i < newSignalData.Length; i++)
+                            {
+                                if (newSignalData[i] >= triggerSystem.TriggerLevelChannel2 && newSignalData[i - 1] < triggerSystem.TriggerLevelChannel2)
+                                {
+                                    triggerIndex = i;
+                                    triggered = true;
+                                    break;
+                                }
+                            }
+
+                            if (triggered && triggerIndex != -1 && !holdingWaveformChannel2)
+                            {
+                                // Align waveform to the left after the trigger
+                                AlignWaveformToLeftChannel2(triggerIndex, samplesPerScreen, newSignalData);
+                                triggerSystem.ResetTriggerChannel2(); // Reset for next event
+
+                                // Start hold timer to prevent overwriting new data for 3 seconds
+                                holdingWaveformChannel2 = true;
+                                holdTimerChannel2.Start();
+                            }
+                            else if (holdingWaveformChannel2)
+                            {
+                                // While holding the waveform, append new data progressively
+                                int spaceAvailable = samplesPerScreen - currentSampleIndexChannel2;
+                                int samplesToAdd = Math.Min(spaceAvailable, newSignalData.Length);
+
+                                if (samplesToAdd > 0)
+                                {
+                                    Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                    currentSampleIndexChannel2 += samplesToAdd;
+                                }
+                            }
+
+                            break;
+                        }
                         break;
                     case TriggerMode.Single:
                         // Add logic for single mode
@@ -514,6 +615,12 @@
         {
             holdTimerChannel1.Interval = interval;
             holdTimerChannel2.Interval = interval;
+        }
+
+        public void SetLevel(float level)
+        {
+            triggerSystem.TriggerLevelChannel1 = level;
+            triggerSystem.TriggerLevelChannel2 = level;
         }
     }
 }
