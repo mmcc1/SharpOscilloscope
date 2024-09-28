@@ -10,6 +10,7 @@ namespace SharpOscilloscope
         private bool running;
         private AudioCapture audioCapture;
         private AudioCapture audioCapture2;
+        bool manualStart = false;
 
         public Form1()
         {
@@ -33,6 +34,7 @@ namespace SharpOscilloscope
             {
                 SetupAudioCapture();
                 running = true;
+                manualStart = true;
                 button1.Text = "&Stop";
             }
             else
@@ -41,8 +43,31 @@ namespace SharpOscilloscope
                 audioCapture2.StopRecordingChannel2();
                 signalDisplayControl1.ResetSingle();
                 running = false;
+                manualStart = false;
                 button1.Text = "&Run";
             }
+        }
+
+        private void Start()
+        {
+            if (manualStart)
+            {
+                SetupAudioCapture();
+                running = true;
+                button1.Text = "&Stop";
+            }
+        }
+
+        private void Stop()
+        {
+            if (running)
+            {
+                audioCapture.StopRecordingChannel1();
+                audioCapture2.StopRecordingChannel2();
+                signalDisplayControl1.ResetSingle();
+                running = false;
+                button1.Text = "&Run";
+            } 
         }
 
         private void SetupAudioCapture()
@@ -95,32 +120,42 @@ namespace SharpOscilloscope
             {
                 case 0: //1ms
                     {
+                        Stop();
                         signalDisplayControl1.SetTimeScale(0.001f);
                         signalDisplayControl1.SetInterval(3000);
+                        Start();
                         break;
                     }
                 case 1: //10ms
                     {
+                        Stop();
                         signalDisplayControl1.SetTimeScale(0.010f);
                         signalDisplayControl1.SetInterval(3000);
+                        Start();
                         break;
                     }
                 case 2: //100ms
                     {
+                        Stop();
                         signalDisplayControl1.SetTimeScale(0.100f);
                         signalDisplayControl1.SetInterval(3000);
+                        Start();
                         break;
                     }
                 case 3: //1sec
                     {
+                        Stop();
                         signalDisplayControl1.SetTimeScale(1.000f);
                         signalDisplayControl1.SetInterval(3000);
+                        Start();
                         break;
                     }
                 case 4: //10sec
                     {
+                        Stop();
                         signalDisplayControl1.SetTimeScale(10.000f);
                         signalDisplayControl1.SetInterval(15000);
+                        Start();
                         break;
                     }
                 default:

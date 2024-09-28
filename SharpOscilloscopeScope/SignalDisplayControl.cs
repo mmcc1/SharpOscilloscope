@@ -707,6 +707,10 @@
         {
             singleTriggeredChannel1 = false;
             singleTriggeredChannel2 = false;
+            holdTimerChannel1.Enabled = false;
+            holdTimerChannel2.Enabled = false;
+            holdingWaveformChannel1 = false;
+            holdingWaveformChannel2 = false;
         }
     }
 }
