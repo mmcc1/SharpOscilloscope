@@ -262,6 +262,44 @@
             triggerSystem.TriggerLevelChannel1 = level;
         }
 
+        public void SetTriggerType(int type)
+        {
+            switch(type)
+            {
+                case 0:
+                    {
+                        triggerSystem.TriggerType = TriggerType.RisingEdge;
+                        break;
+                    }
+
+                case 1:
+                    {
+                        triggerSystem.TriggerType = TriggerType.FallingEdge;
+                        break;
+                    }
+
+                case 2:
+                    {
+                        triggerSystem.TriggerType = TriggerType.Level;
+                        break;
+                    }
+
+                case 3:
+                    {
+                        triggerSystem.TriggerType = TriggerType.Pulse;
+                        break;
+                    }
+
+                case 4:
+                    {
+                        triggerSystem.TriggerType = TriggerType.Slope;
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
         public void SetPreTrigger(float time)
         {
             preTriggerSamples = (int)(time * sampleRate);

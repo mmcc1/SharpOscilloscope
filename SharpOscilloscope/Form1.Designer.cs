@@ -84,7 +84,7 @@
             // closeToolStripMenuItem
             // 
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(180, 22);
+            closeToolStripMenuItem.Size = new Size(103, 22);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
@@ -226,7 +226,7 @@
             // comboBox4
             // 
             comboBox4.FormattingEnabled = true;
-            comboBox4.Items.AddRange(new object[] { "Rising Edge", "Falling Edge", "Level" });
+            comboBox4.Items.AddRange(new object[] { "Rising Edge", "Falling Edge", "Level", "Pulse", "Slope" });
             comboBox4.Location = new Point(75, 45);
             comboBox4.Name = "comboBox4";
             comboBox4.Size = new Size(121, 23);

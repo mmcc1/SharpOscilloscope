@@ -240,7 +240,36 @@ namespace SharpOscilloscope
         //Type
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //signalDisplayControl1.tr
+            switch (comboBox4.SelectedIndex)
+            {
+                case 0: //RisingEdge
+                    {
+                        signalDisplayControl1.SetTriggerType(0);
+                        break;
+                    }
+                case 1: //FallingEdge
+                    {
+                        signalDisplayControl1.SetTriggerType(1);
+                        break;
+                    }
+                case 2: //Level
+                    {
+                        signalDisplayControl1.SetTriggerType(2);
+                        break;
+                    }
+                case 3: //Pulse
+                    {
+                        signalDisplayControl1.SetTriggerType(3);
+                        break;
+                    }
+                case 4: //Slope
+                    {
+                        signalDisplayControl1.SetTriggerType(4);
+                        break;
+                    }
+                default:
+                    break;
+            }
         }
 
         //Trigger level

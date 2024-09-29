@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace SharpOscilloscopeScope
 {
-    public enum TriggerType { Edge, Level, Pulse, Slope }
+    public enum TriggerType { RisingEdge, FallingEdge, Level, Pulse, Slope }
     public enum TriggerMode { None, Auto, Normal, Single }
 
     internal class TriggerSystem
     {
-        public TriggerType TriggerType { get; set; } = TriggerType.Edge;
+        public TriggerType TriggerType { get; set; } = TriggerType.RisingEdge;
         public TriggerMode TriggerMode { get; set; } = TriggerMode.None;
         public float TriggerLevelChannel1 { get; set; } = 0.3f;
         public float TriggerLevelChannel2 { get; set; } = 0.3f;
@@ -19,10 +19,20 @@ namespace SharpOscilloscopeScope
 
         public bool IsTriggeredChannel1 { get; set; } = false;
         public bool IsTriggeredChannel2 { get; set; } = false;
+        
         private float preTriggerBufferChannel1;
         private float preTriggerBufferChannel2;
         private bool waitingForTriggerChannel1 = true;
         private bool waitingForTriggerChannel2 = true;
+
+        private DateTime pulseStartTime;
+        private DateTime pulseEndTime;
+        private bool pulseInProgress = false;
+        public double MinPulseDuration = 1; // Min pulse duration in milliseconds
+        public double MaxPulseDuration = 1000; // Max pulse duration in milliseconds
+
+        public float SlopeThreshold = 0.5f; // Example threshold for slope detection
+        public float TimeBetweenSamples = 0.001f; // Time between samples in seconds
 
         public bool CheckTriggerChannel1(float currentSample, float previousSample)
         {
@@ -30,33 +40,75 @@ namespace SharpOscilloscopeScope
 
             switch (TriggerType)
             {
-                case TriggerType.Edge:
-                    if (TriggerOnRisingEdge)
+                case TriggerType.RisingEdge:
                     {
                         // Trigger on a rising edge crossing the trigger level
                         if (previousSample < TriggerLevelChannel1 && currentSample >= TriggerLevelChannel1)
                         {
                             IsTriggeredChannel1 = true;
                         }
+
+                        break;
                     }
-                    else
+                case TriggerType.FallingEdge:
                     {
                         // Trigger on a falling edge crossing the trigger level
                         if (previousSample > TriggerLevelChannel1 && currentSample <= TriggerLevelChannel1)
                         {
                             IsTriggeredChannel1 = true;
                         }
-                    }
-                    break;
 
+                        break;
+                    }
                 case TriggerType.Level:
-                    if (currentSample >= TriggerLevelChannel1)
                     {
-                        IsTriggeredChannel1 = true;
-                    }
-                    break;
+                        if (currentSample >= TriggerLevelChannel1)
+                        {
+                            IsTriggeredChannel1 = true;
+                        }
 
-                    // Additional logic for Pulse and Slope triggering can be added here
+                        break;
+                    }
+                case TriggerType.Pulse:
+                    {
+                        // Detect a pulse with a specific duration
+                        if (previousSample < TriggerLevelChannel1 && currentSample >= TriggerLevelChannel1)
+                        {
+                            // Start counting the pulse duration
+                            pulseStartTime = DateTime.Now;
+                            pulseInProgress = true;
+                        }
+
+                        if (pulseInProgress && currentSample < TriggerLevelChannel1)
+                        {
+                            // If the pulse drops below the trigger level, calculate the duration
+                            pulseEndTime = DateTime.Now;
+                            double pulseDuration = (pulseEndTime - pulseStartTime).TotalMilliseconds;
+
+                            if (pulseDuration >= MinPulseDuration && pulseDuration <= MaxPulseDuration)
+                            {
+                                IsTriggeredChannel1 = true;
+                            }
+
+                            pulseInProgress = false; // Reset the pulse
+                        }
+
+                        break;
+                    }
+                case TriggerType.Slope:
+                    {
+                        // Detect if the slope exceeds a threshold
+                        float slope = (currentSample - previousSample) / TimeBetweenSamples;
+
+                        if (Math.Abs(slope) >= SlopeThreshold)
+                        {
+                            IsTriggeredChannel1 = true;
+                        }
+
+                        break;
+                    }
+                default:
+                    break;
             }
 
             return IsTriggeredChannel1;
@@ -68,33 +120,75 @@ namespace SharpOscilloscopeScope
 
             switch (TriggerType)
             {
-                case TriggerType.Edge:
-                    if (TriggerOnRisingEdge)
+                case TriggerType.RisingEdge:
                     {
                         // Trigger on a rising edge crossing the trigger level
                         if (previousSample < TriggerLevelChannel2 && currentSample >= TriggerLevelChannel2)
                         {
                             IsTriggeredChannel2 = true;
                         }
+
+                        break;
                     }
-                    else
+                case TriggerType.FallingEdge:
                     {
                         // Trigger on a falling edge crossing the trigger level
                         if (previousSample > TriggerLevelChannel2 && currentSample <= TriggerLevelChannel2)
                         {
                             IsTriggeredChannel2 = true;
                         }
-                    }
-                    break;
 
+                        break;
+                    }
                 case TriggerType.Level:
-                    if (currentSample >= TriggerLevelChannel2)
                     {
-                        IsTriggeredChannel2 = true;
-                    }
-                    break;
+                        if (currentSample >= TriggerLevelChannel2)
+                        {
+                            IsTriggeredChannel2 = true;
+                        }
 
-                    // Additional logic for Pulse and Slope triggering can be added here
+                        break;
+                    }
+                case TriggerType.Pulse:
+                    {
+                        // Detect a pulse with a specific duration
+                        if (previousSample < TriggerLevelChannel2 && currentSample >= TriggerLevelChannel2)
+                        {
+                            // Start counting the pulse duration
+                            pulseStartTime = DateTime.Now;
+                            pulseInProgress = true;
+                        }
+
+                        if (pulseInProgress && currentSample < TriggerLevelChannel2)
+                        {
+                            // If the pulse drops below the trigger level, calculate the duration
+                            pulseEndTime = DateTime.Now;
+                            double pulseDuration = (pulseEndTime - pulseStartTime).TotalMilliseconds;
+
+                            if (pulseDuration >= MinPulseDuration && pulseDuration <= MaxPulseDuration)
+                            {
+                                IsTriggeredChannel2 = true;
+                            }
+
+                            pulseInProgress = false; // Reset the pulse
+                        }
+
+                        break;
+                    }
+                case TriggerType.Slope:
+                    {
+                        // Detect if the slope exceeds a threshold
+                        float slope = (currentSample - previousSample) / TimeBetweenSamples;
+
+                        if (Math.Abs(slope) >= SlopeThreshold)
+                        {
+                            IsTriggeredChannel2 = true;
+                        }
+
+                        break;
+                    }
+                default:
+                    break;
             }
 
             return IsTriggeredChannel2;
