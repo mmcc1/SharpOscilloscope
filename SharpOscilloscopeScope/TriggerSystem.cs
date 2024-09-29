@@ -19,12 +19,6 @@
  * <https://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace SharpOscilloscopeScope
 {
     public enum TriggerType { RisingEdge, FallingEdge, Level, Pulse, Slope }
@@ -32,34 +26,46 @@ namespace SharpOscilloscopeScope
 
     internal class TriggerSystem
     {
-        public TriggerType TriggerType { get; set; } = TriggerType.RisingEdge;
-        public TriggerMode TriggerMode { get; set; } = TriggerMode.None;
+        public TriggerType TriggerTypeChannel1 { get; set; } = TriggerType.RisingEdge;
+        public TriggerType TriggerTypeChannel2 { get; set; } = TriggerType.RisingEdge;
+        public TriggerMode TriggerModeChannel1 { get; set; } = TriggerMode.None;
+        public TriggerMode TriggerModeChannel2 { get; set; } = TriggerMode.None;
         public float TriggerLevelChannel1 { get; set; } = 0.3f;
         public float TriggerLevelChannel2 { get; set; } = 0.3f;
-        public bool TriggerOnRisingEdge { get; set; } = true;
+        //public bool TriggerOnRisingEdge { get; set; } = true;
 
         public bool IsTriggeredChannel1 { get; set; } = false;
         public bool IsTriggeredChannel2 { get; set; } = false;
         
-        private float preTriggerBufferChannel1;
-        private float preTriggerBufferChannel2;
-        private bool waitingForTriggerChannel1 = true;
-        private bool waitingForTriggerChannel2 = true;
+        //private float preTriggerBufferChannel1;
+        //private float preTriggerBufferChannel2;
+        //private bool waitingForTriggerChannel1 = true;
+        //private bool waitingForTriggerChannel2 = true;
 
-        private DateTime pulseStartTime;
-        private DateTime pulseEndTime;
-        private bool pulseInProgress = false;
-        public double MinPulseDuration = 1; // Min pulse duration in milliseconds
-        public double MaxPulseDuration = 1000; // Max pulse duration in milliseconds
+        private DateTime pulseStartTimeChannel1;
+        private DateTime pulseEndTimeChannel1;
+        private bool pulseInProgressChannel1 = false;
+        public double MinPulseDurationChannel1 = 1; // Min pulse duration in milliseconds
+        public double MaxPulseDurationChannel1 = 1000; // Max pulse duration in milliseconds
 
-        public float SlopeThreshold = 0.5f; // Example threshold for slope detection
-        public float TimeBetweenSamples = 0.001f; // Time between samples in seconds
+        public float SlopeThresholdChannel1 = 0.5f; // Example threshold for slope detection
+        public float TimeBetweenSamplesChannel1 = 0.001f; // Time between samples in seconds
+
+
+        private DateTime pulseStartTimeChannel2;
+        private DateTime pulseEndTimeChannel2;
+        private bool pulseInProgressChannel2 = false;
+        public double MinPulseDurationChannel2 = 1; // Min pulse duration in milliseconds
+        public double MaxPulseDurationChannel2 = 1000; // Max pulse duration in milliseconds
+
+        public float SlopeThresholdChannel2 = 0.5f; // Example threshold for slope detection
+        public float TimeBetweenSamplesChannel2 = 0.001f; // Time between samples in seconds
 
         public bool CheckTriggerChannel1(float currentSample, float previousSample)
         {
             if (IsTriggeredChannel1) return false; // Avoid re-triggering while already triggered
 
-            switch (TriggerType)
+            switch (TriggerTypeChannel1)
             {
                 case TriggerType.RisingEdge:
                     {
@@ -96,22 +102,22 @@ namespace SharpOscilloscopeScope
                         if (previousSample < TriggerLevelChannel1 && currentSample >= TriggerLevelChannel1)
                         {
                             // Start counting the pulse duration
-                            pulseStartTime = DateTime.Now;
-                            pulseInProgress = true;
+                            pulseStartTimeChannel1 = DateTime.Now;
+                            pulseInProgressChannel1 = true;
                         }
 
-                        if (pulseInProgress && currentSample < TriggerLevelChannel1)
+                        if (pulseInProgressChannel1 && currentSample < TriggerLevelChannel1)
                         {
                             // If the pulse drops below the trigger level, calculate the duration
-                            pulseEndTime = DateTime.Now;
-                            double pulseDuration = (pulseEndTime - pulseStartTime).TotalMilliseconds;
+                            pulseEndTimeChannel1 = DateTime.Now;
+                            double pulseDuration = (pulseEndTimeChannel1 - pulseStartTimeChannel1).TotalMilliseconds;
 
-                            if (pulseDuration >= MinPulseDuration && pulseDuration <= MaxPulseDuration)
+                            if (pulseDuration >= MinPulseDurationChannel1 && pulseDuration <= MaxPulseDurationChannel1)
                             {
                                 IsTriggeredChannel1 = true;
                             }
 
-                            pulseInProgress = false; // Reset the pulse
+                            pulseInProgressChannel1 = false; // Reset the pulse
                         }
 
                         break;
@@ -119,9 +125,9 @@ namespace SharpOscilloscopeScope
                 case TriggerType.Slope:
                     {
                         // Detect if the slope exceeds a threshold
-                        float slope = (currentSample - previousSample) / TimeBetweenSamples;
+                        float slope = (currentSample - previousSample) / TimeBetweenSamplesChannel1;
 
-                        if (Math.Abs(slope) >= SlopeThreshold)
+                        if (Math.Abs(slope) >= SlopeThresholdChannel1)
                         {
                             IsTriggeredChannel1 = true;
                         }
@@ -139,7 +145,7 @@ namespace SharpOscilloscopeScope
         {
             if (IsTriggeredChannel2) return false; // Avoid re-triggering while already triggered
 
-            switch (TriggerType)
+            switch (TriggerTypeChannel1)
             {
                 case TriggerType.RisingEdge:
                     {
@@ -176,22 +182,22 @@ namespace SharpOscilloscopeScope
                         if (previousSample < TriggerLevelChannel2 && currentSample >= TriggerLevelChannel2)
                         {
                             // Start counting the pulse duration
-                            pulseStartTime = DateTime.Now;
-                            pulseInProgress = true;
+                            pulseStartTimeChannel2 = DateTime.Now;
+                            pulseInProgressChannel2 = true;
                         }
 
-                        if (pulseInProgress && currentSample < TriggerLevelChannel2)
+                        if (pulseInProgressChannel2 && currentSample < TriggerLevelChannel2)
                         {
                             // If the pulse drops below the trigger level, calculate the duration
-                            pulseEndTime = DateTime.Now;
-                            double pulseDuration = (pulseEndTime - pulseStartTime).TotalMilliseconds;
+                            pulseEndTimeChannel2 = DateTime.Now;
+                            double pulseDuration = (pulseEndTimeChannel2 - pulseStartTimeChannel2).TotalMilliseconds;
 
-                            if (pulseDuration >= MinPulseDuration && pulseDuration <= MaxPulseDuration)
+                            if (pulseDuration >= MinPulseDurationChannel2 && pulseDuration <= MaxPulseDurationChannel2)
                             {
                                 IsTriggeredChannel2 = true;
                             }
 
-                            pulseInProgress = false; // Reset the pulse
+                            pulseInProgressChannel2 = false; // Reset the pulse
                         }
 
                         break;
@@ -199,9 +205,9 @@ namespace SharpOscilloscopeScope
                 case TriggerType.Slope:
                     {
                         // Detect if the slope exceeds a threshold
-                        float slope = (currentSample - previousSample) / TimeBetweenSamples;
+                        float slope = (currentSample - previousSample) / TimeBetweenSamplesChannel2;
 
-                        if (Math.Abs(slope) >= SlopeThreshold)
+                        if (Math.Abs(slope) >= SlopeThresholdChannel2)
                         {
                             IsTriggeredChannel2 = true;
                         }
@@ -218,13 +224,13 @@ namespace SharpOscilloscopeScope
         public void ResetTriggerChannel1()
         {
             IsTriggeredChannel1 = false;
-            waitingForTriggerChannel1 = true;
+            //waitingForTriggerChannel1 = true;
         }
 
         public void ResetTriggerChannel2()
         {
             IsTriggeredChannel2 = false;
-            waitingForTriggerChannel2 = true;
+            //waitingForTriggerChannel2 = true;
         }
     }
 }

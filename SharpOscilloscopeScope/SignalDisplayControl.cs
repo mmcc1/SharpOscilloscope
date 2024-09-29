@@ -23,8 +23,8 @@ namespace SharpOscilloscopeScope
 {
     public partial class SignalDisplayControl : UserControl
     {
-        private float[] leftChannelData = new float[0];   // Data for left channel
-        private float[] rightChannelData = new float[0];  // Data for right channel
+        private float[] channel1Data = new float[0];   // Data for left channel
+        private float[] channel2Data = new float[0];  // Data for right channel
         private object dataLock = new object();           // Ensure thread-safety
 
         private int sampleRate = 48000;                   // Default sample rate
@@ -87,37 +87,11 @@ namespace SharpOscilloscopeScope
             holdTimerChannel2.Elapsed += (s, e) => EndHoldChannel2();
             holdTimerChannel2.AutoReset = false; // We want a single execution, no repeat
 
-            triggerSystem.TriggerMode = TriggerMode.None;
+            triggerSystem.TriggerModeChannel1 = TriggerMode.None;
+            triggerSystem.TriggerModeChannel2 = TriggerMode.None;
         }
 
-        public void SetMode(int mode)
-        {
-            switch(mode)
-            {
-                case 0:
-                    {
-                        triggerSystem.TriggerMode = TriggerMode.None;
-                        break;
-                    }
-                case 1:
-                    {
-                        triggerSystem.TriggerMode = TriggerMode.Auto;
-                        break;
-                    }
-                case 2:
-                    {
-                        triggerSystem.TriggerMode = TriggerMode.Normal;
-                        break;
-                    }
-                case 3:
-                    {
-                        triggerSystem.TriggerMode = TriggerMode.Single;
-                        break;
-                    }
-                default:
-                    break;
-            }
-        }
+        
 
         private void AppendSignalData(ref float[] channelData, float[] newData)
         {
@@ -244,13 +218,13 @@ namespace SharpOscilloscopeScope
             // Draw left channel signal if enabled
             if (displayLeftChannel)
             {
-                DrawWaveform(g, leftChannelPen, leftChannelData, width, height, amplitudeScale);
+                DrawWaveform(g, leftChannelPen, channel1Data, width, height, amplitudeScale);
             }
 
             // Draw right channel signal if enabled
             if (displayRightChannel)
             {
-                DrawWaveform(g, rightChannelPen, rightChannelData, width, height, amplitudeScale * 0.75f);  // Slightly offset amplitude for visibility
+                DrawWaveform(g, rightChannelPen, channel2Data, width, height, amplitudeScale * 0.75f);  // Slightly offset amplitude for visibility
             }
 
             leftChannelPen.Dispose();
@@ -278,42 +252,38 @@ namespace SharpOscilloscopeScope
         }
 
         //############### Trigger Support ###############
-        public void SetTriggerLevel(float level)
+        public void SetTriggerLevelChannel1(float level)
         {
             triggerSystem.TriggerLevelChannel1 = level;
         }
 
-        public void SetTriggerType(int type)
+        public void SetTriggerLevelChannel2(float level)
         {
-            switch(type)
+            triggerSystem.TriggerLevelChannel2 = level;
+        }
+
+        public void SetModeChannel1(int mode)
+        {
+            switch (mode)
             {
                 case 0:
                     {
-                        triggerSystem.TriggerType = TriggerType.RisingEdge;
+                        triggerSystem.TriggerModeChannel1 = TriggerMode.None;
                         break;
                     }
-
                 case 1:
                     {
-                        triggerSystem.TriggerType = TriggerType.FallingEdge;
+                        triggerSystem.TriggerModeChannel1 = TriggerMode.Auto;
                         break;
                     }
-
                 case 2:
                     {
-                        triggerSystem.TriggerType = TriggerType.Level;
+                        triggerSystem.TriggerModeChannel1 = TriggerMode.Normal;
                         break;
                     }
-
                 case 3:
                     {
-                        triggerSystem.TriggerType = TriggerType.Pulse;
-                        break;
-                    }
-
-                case 4:
-                    {
-                        triggerSystem.TriggerType = TriggerType.Slope;
+                        triggerSystem.TriggerModeChannel1 = TriggerMode.Single;
                         break;
                     }
                 default:
@@ -321,6 +291,112 @@ namespace SharpOscilloscopeScope
             }
         }
 
+        public void SetModeChannel2(int mode)
+        {
+            switch (mode)
+            {
+                case 0:
+                    {
+                        triggerSystem.TriggerModeChannel2 = TriggerMode.None;
+                        break;
+                    }
+                case 1:
+                    {
+                        triggerSystem.TriggerModeChannel2 = TriggerMode.Auto;
+                        break;
+                    }
+                case 2:
+                    {
+                        triggerSystem.TriggerModeChannel2 = TriggerMode.Normal;
+                        break;
+                    }
+                case 3:
+                    {
+                        triggerSystem.TriggerModeChannel2 = TriggerMode.Single;
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public void SetTriggerTypeChannel1(int type)
+        {
+            switch(type)
+            {
+                case 0:
+                    {
+                        triggerSystem.TriggerTypeChannel1 = TriggerType.RisingEdge;
+                        break;
+                    }
+
+                case 1:
+                    {
+                        triggerSystem.TriggerTypeChannel1 = TriggerType.FallingEdge;
+                        break;
+                    }
+
+                case 2:
+                    {
+                        triggerSystem.TriggerTypeChannel1 = TriggerType.Level;
+                        break;
+                    }
+
+                case 3:
+                    {
+                        triggerSystem.TriggerTypeChannel1 = TriggerType.Pulse;
+                        break;
+                    }
+
+                case 4:
+                    {
+                        triggerSystem.TriggerTypeChannel1 = TriggerType.Slope;
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        public void SetTriggerTypeChannel2(int type)
+        {
+            switch (type)
+            {
+                case 0:
+                    {
+                        triggerSystem.TriggerTypeChannel2 = TriggerType.RisingEdge;
+                        break;
+                    }
+
+                case 1:
+                    {
+                        triggerSystem.TriggerTypeChannel2 = TriggerType.FallingEdge;
+                        break;
+                    }
+
+                case 2:
+                    {
+                        triggerSystem.TriggerTypeChannel2 = TriggerType.Level;
+                        break;
+                    }
+
+                case 3:
+                    {
+                        triggerSystem.TriggerTypeChannel2 = TriggerType.Pulse;
+                        break;
+                    }
+
+                case 4:
+                    {
+                        triggerSystem.TriggerTypeChannel2 = TriggerType.Slope;
+                        break;
+                    }
+                default:
+                    break;
+            }
+        }
+
+        /*
         public void SetPreTrigger(float time)
         {
             preTriggerSamples = (int)(time * sampleRate);
@@ -330,8 +406,9 @@ namespace SharpOscilloscopeScope
         {
             postTriggerSamples = (int)(time * sampleRate);
         }
+        */
 
-        public void UpdateLeftChannelData(float[] newSignalData)
+        public void UpdateChannel1Data(float[] newSignalData)
         {
             lock (dataLock)
             {
@@ -339,12 +416,12 @@ namespace SharpOscilloscopeScope
                 bool triggered = false;
                 int triggerIndex = -1;
 
-                switch (triggerSystem.TriggerMode)
+                switch (triggerSystem.TriggerModeChannel1)
                 {
                     case TriggerMode.None:
                         {
                             // Smoothly scroll the waveform when there's no trigger mode
-                            AppendSignalData(ref leftChannelData, newSignalData);
+                            AppendSignalData(ref channel1Data, newSignalData);
                             ScrollWaveformChannel1(samplesPerScreen);
                             break;
                         }
@@ -379,14 +456,14 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, leftChannelData, currentSampleIndexChannel1, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel1Data, currentSampleIndexChannel1, samplesToAdd);
                                     currentSampleIndexChannel1 += samplesToAdd;
                                 }
                             }
                             else
                             {
                                 // Scroll the waveform smoothly if not holding
-                                AppendSignalData(ref leftChannelData, newSignalData);
+                                AppendSignalData(ref channel1Data, newSignalData);
                                 ScrollWaveformChannel1(samplesPerScreen);
                             }
 
@@ -423,7 +500,7 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, leftChannelData, currentSampleIndexChannel1, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel1Data, currentSampleIndexChannel1, samplesToAdd);
                                     currentSampleIndexChannel1 += samplesToAdd;
                                 }
                             }
@@ -466,7 +543,7 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, leftChannelData, currentSampleIndexChannel1, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel1Data, currentSampleIndexChannel1, samplesToAdd);
                                     currentSampleIndexChannel1 += samplesToAdd;
                                 }
                             }
@@ -498,14 +575,14 @@ namespace SharpOscilloscopeScope
         private void AlignWaveformToLeftChannel1(int triggerIndex, int samplesPerScreen, float[] newSignalData)
         {
             // Create a buffer for the full screen
-            leftChannelData = new float[samplesPerScreen];
+            channel1Data = new float[samplesPerScreen];
 
             // Number of samples after the trigger
             int samplesAfterTrigger = newSignalData.Length - triggerIndex;
 
             // Copy data starting from the trigger point
             int samplesToCopy = Math.Min(samplesAfterTrigger, samplesPerScreen);
-            Array.Copy(newSignalData, triggerIndex, leftChannelData, 0, samplesToCopy);
+            Array.Copy(newSignalData, triggerIndex, channel1Data, 0, samplesToCopy);
 
             // The rest of the screen will be filled progressively with new data
             currentSampleIndexChannel1 = samplesToCopy; // Keep track of where the next data should be appended
@@ -514,14 +591,14 @@ namespace SharpOscilloscopeScope
         private void AlignWaveformToLeftChannel2(int triggerIndex, int samplesPerScreen, float[] newSignalData)
         {
             // Create a buffer for the full screen
-            rightChannelData = new float[samplesPerScreen];
+            channel2Data = new float[samplesPerScreen];
 
             // Number of samples after the trigger
             int samplesAfterTrigger = newSignalData.Length - triggerIndex;
 
             // Copy data starting from the trigger point
             int samplesToCopy = Math.Min(samplesAfterTrigger, samplesPerScreen);
-            Array.Copy(newSignalData, triggerIndex, rightChannelData, 0, samplesToCopy);
+            Array.Copy(newSignalData, triggerIndex, channel2Data, 0, samplesToCopy);
 
             // The rest of the screen will be filled progressively with new data
             currentSampleIndexChannel2 = samplesToCopy; // Keep track of where the next data should be appended
@@ -531,23 +608,23 @@ namespace SharpOscilloscopeScope
         // Handles smooth scrolling when no trigger is detected or in bypass mode
         private void ScrollWaveformChannel1(int samplesPerScreen)
         {
-            if (leftChannelData.Length > samplesPerScreen)
+            if (channel1Data.Length > samplesPerScreen)
             {
                 // Truncate old data, retain only the most recent samples to fit the screen
-                leftChannelData = leftChannelData.Skip(leftChannelData.Length - samplesPerScreen).ToArray();
+                channel1Data = channel1Data.Skip(channel1Data.Length - samplesPerScreen).ToArray();
             }
         }
 
         private void ScrollWaveformChannel2(int samplesPerScreen)
         {
-            if (rightChannelData.Length > samplesPerScreen)
+            if (channel2Data.Length > samplesPerScreen)
             {
                 // Truncate old data, retain only the most recent samples to fit the screen
-                rightChannelData = rightChannelData.Skip(rightChannelData.Length - samplesPerScreen).ToArray();
+                channel2Data = channel2Data.Skip(channel2Data.Length - samplesPerScreen).ToArray();
             }
         }
 
-        public void UpdateRightChannelData(float[] newSignalData)
+        public void UpdateChannel2Data(float[] newSignalData)
         {
             lock (dataLock)
             {
@@ -555,12 +632,12 @@ namespace SharpOscilloscopeScope
                 bool triggered = false;
                 int triggerIndex = -1;
 
-                switch (triggerSystem.TriggerMode)
+                switch (triggerSystem.TriggerModeChannel2)
                 {
                     case TriggerMode.None:
                         {
                             // Smoothly scroll the waveform when there's no trigger mode
-                            AppendSignalData(ref rightChannelData, newSignalData);
+                            AppendSignalData(ref channel2Data, newSignalData);
                             ScrollWaveformChannel2(samplesPerScreen);
                             break;
                         }
@@ -595,14 +672,14 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel2Data, currentSampleIndexChannel2, samplesToAdd);
                                     currentSampleIndexChannel2 += samplesToAdd;
                                 }
                             }
                             else
                             {
                                 // Scroll the waveform smoothly if not holding
-                                AppendSignalData(ref rightChannelData, newSignalData);
+                                AppendSignalData(ref channel2Data, newSignalData);
                                 ScrollWaveformChannel2(samplesPerScreen);
                             }
 
@@ -640,7 +717,7 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel2Data, currentSampleIndexChannel2, samplesToAdd);
                                     currentSampleIndexChannel2 += samplesToAdd;
                                 }
                             }
@@ -683,7 +760,7 @@ namespace SharpOscilloscopeScope
 
                                 if (samplesToAdd > 0)
                                 {
-                                    Array.Copy(newSignalData, 0, rightChannelData, currentSampleIndexChannel2, samplesToAdd);
+                                    Array.Copy(newSignalData, 0, channel2Data, currentSampleIndexChannel2, samplesToAdd);
                                     currentSampleIndexChannel2 += samplesToAdd;
                                 }
                             }
@@ -699,6 +776,7 @@ namespace SharpOscilloscopeScope
             Invalidate();
         }
 
+        /*
         // Handle appending pre-trigger data
         private void AppendPreTriggerData(ref float[] channelData, float[] newData, int triggerIndex)
         {
@@ -706,6 +784,7 @@ namespace SharpOscilloscopeScope
             float[] preTriggerData = newData[preTriggerIndex..triggerIndex];
             AppendSignalData(ref channelData, preTriggerData);
         }
+        */
 
         // Draw the time and amplitude cursors
         private void DrawCursors(Graphics g)
@@ -736,6 +815,7 @@ namespace SharpOscilloscopeScope
             DrawCursors(e.Graphics);  // Draw cursors over the signal
         }
 
+        /*
         public void SetTimeCursor(float position)
         {
             showTimeCursor = true;
@@ -749,27 +829,80 @@ namespace SharpOscilloscopeScope
             amplitudeCursorPosition = position;
             Invalidate();
         }
+        */
 
-        public void SetInterval(int interval)
+        public void SetIntervalChannel1(int interval)
         {
             holdTimerChannel1.Interval = interval;
+        }
+
+        public void SetIntervalChannel2(int interval)
+        {
             holdTimerChannel2.Interval = interval;
         }
 
-        public void SetLevel(float level)
+        public void SetLevelChannel1(float level)
         {
             triggerSystem.TriggerLevelChannel1 = level;
+        }
+
+        public void SetLevelChannel2(float level)
+        {;
             triggerSystem.TriggerLevelChannel2 = level;
         }
 
-        public void ResetSingle()
+        public void ResetSingleChannel1()
         {
             singleTriggeredChannel1 = false;
-            singleTriggeredChannel2 = false;
             holdTimerChannel1.Enabled = false;
-            holdTimerChannel2.Enabled = false;
             holdingWaveformChannel1 = false;
+        }
+
+        public void ResetSingleChannel2()
+        {
+            singleTriggeredChannel2 = false;
+            holdTimerChannel2.Enabled = false;
             holdingWaveformChannel2 = false;
+        }
+
+        public void SetMinPulseDurationChannel1(double duration)
+        {
+            triggerSystem.MinPulseDurationChannel1 = duration;
+        }
+
+        public void SetMinPulseDurationChannel2(double duration)
+        {
+            triggerSystem.MinPulseDurationChannel2 = duration;
+        }
+
+        public void SetMaxPulseDurationChannel1(double duration)
+        {
+            triggerSystem.MaxPulseDurationChannel1 = duration;
+        }
+
+        public void SetMaxPulseDurationChannel2(double duration)
+        {
+            triggerSystem.MaxPulseDurationChannel2 = duration;
+        }
+
+        public void SetSlopeThresholdChannel1(float threshold)
+        {
+            triggerSystem.SlopeThresholdChannel1 = threshold;
+        }
+
+        public void SetSlopeThresholdChannel2(float threshold)
+        {
+            triggerSystem.SlopeThresholdChannel2 = threshold;
+        }
+
+        public void SetTimeBetweenSamplesChannel1(float tbs)
+        {
+            triggerSystem.TimeBetweenSamplesChannel1 = tbs;
+        }
+
+        public void SetTimeBetweenSamplesChannel2(float tbs)
+        {
+            triggerSystem.TimeBetweenSamplesChannel2 = tbs;
         }
     }
 }
