@@ -8,3 +8,5 @@ Has support for:
 - Rising Edge, Falling Edge, Level, Pulse and Slope trigger types 
 - Independent triggers for each channel
 - Supports 16 bit, 48000 Hz input sources
+
+![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI.jpg?raw=true)
