@@ -1,6 +1,6 @@
 # Sharp Oscilloscope 
 
-A windows-based 2-channel oscilloscope which uses audio inputs. 
+An open source windows-based 2-channel oscilloscope which uses audio inputs. 
 
 Has support for: 
 - Auto, Normal and Single trigger modes 
