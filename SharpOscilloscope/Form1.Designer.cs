@@ -610,7 +610,7 @@
             // comboBox1
             // 
             comboBox1.FormattingEnabled = true;
-            comboBox1.Items.AddRange(new object[] { "1ms", "10ms", "100ms", "1sec", "10sec" });
+            comboBox1.Items.AddRange(new object[] { "1ms", "10ms", "50ms", "100ms", "500ms", "1sec", "5sec", "10sec" });
             comboBox1.Location = new Point(89, 22);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(110, 23);

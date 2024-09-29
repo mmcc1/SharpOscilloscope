@@ -192,6 +192,7 @@ namespace SharpOscilloscope
                         Stop();
                         signalDisplayControl1.SetTimeScale(0.001f);
                         signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
                         Start();
                         break;
                     }
@@ -200,30 +201,61 @@ namespace SharpOscilloscope
                         Stop();
                         signalDisplayControl1.SetTimeScale(0.010f);
                         signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
                         Start();
                         break;
                     }
-                case 2: //100ms
+                case 2: //50ms
+                    {
+                        Stop();
+                        signalDisplayControl1.SetTimeScale(0.050f);
+                        signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
+                        Start();
+                        break;
+                    }
+                case 3: //100ms
                     {
                         Stop();
                         signalDisplayControl1.SetTimeScale(0.100f);
                         signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
                         Start();
                         break;
                     }
-                case 3: //1sec
+                case 4: //500ms
+                    {
+                        Stop();
+                        signalDisplayControl1.SetTimeScale(0.500f);
+                        signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
+                        Start();
+                        break;
+                    }
+                case 5: //1sec
                     {
                         Stop();
                         signalDisplayControl1.SetTimeScale(1.000f);
                         signalDisplayControl1.SetIntervalChannel1(3000);
+                        signalDisplayControl1.SetIntervalChannel2(3000);
                         Start();
                         break;
                     }
-                case 4: //10sec
+                case 6: //5sec
+                    {
+                        Stop();
+                        signalDisplayControl1.SetTimeScale(5.000f);
+                        signalDisplayControl1.SetIntervalChannel1(8000);
+                        signalDisplayControl1.SetIntervalChannel2(8000);
+                        Start();
+                        break;
+                    }
+                case 7: //10sec
                     {
                         Stop();
                         signalDisplayControl1.SetTimeScale(10.000f);
-                        signalDisplayControl1.SetIntervalChannel1(15000);
+                        signalDisplayControl1.SetIntervalChannel1(13000);
+                        signalDisplayControl1.SetIntervalChannel2(13000);
                         Start();
                         break;
                     }
