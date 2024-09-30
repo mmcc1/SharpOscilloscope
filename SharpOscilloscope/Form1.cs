@@ -20,7 +20,8 @@
  */
 
 using SharpOscilloscopeLib;
-using System.Data;
+using SharpOscilloscopeScope;
+using static SharpOscilloscopeScope.FFTDisplayControl;
 
 namespace SharpOscilloscope
 {
@@ -32,6 +33,9 @@ namespace SharpOscilloscope
         private AudioCapture audioCapture;
         private AudioCapture audioCapture2;
         bool manualStart = false;
+        FftProcessor fftProcessor;
+        FifoFloatBuffer fifoBuffer;
+        bool fftChannel1 = true;
 
         public Form1()
         {
@@ -85,6 +89,10 @@ namespace SharpOscilloscope
             button3.Enabled = false;
             button8.Enabled = false;
             button9.Enabled = false;
+
+            fftProcessor = new FftProcessor(4096);
+            fifoBuffer = new FifoFloatBuffer();
+            radioButton1.Checked = true;
         }
 
         //Run/Stop button
@@ -101,10 +109,11 @@ namespace SharpOscilloscope
             }
             else
             {
+                running = false;
                 audioCapture.StopRecordingChannel1();
                 audioCapture2.StopRecordingChannel2();
                 signalDisplayControl1.ResetSingleChannel1();
-                running = false;
+
                 manualStart = false;
                 button1.Text = "&Run";
                 //Status
@@ -128,10 +137,11 @@ namespace SharpOscilloscope
         {
             if (running)
             {
+                running = false;
                 audioCapture.StopRecordingChannel1();
                 audioCapture2.StopRecordingChannel2();
 
-                running = false;
+
                 button1.Text = "&Run";
             }
         }
@@ -152,12 +162,30 @@ namespace SharpOscilloscope
         // This will be called when new audio data is available for Channel 1
         private void ProcessAudioDataChannel1(float[] channel1Data, float[] channel1DummyData)
         {
+            if (running && fftChannel1)
+            {
+                fifoBuffer.AppendBlock(channel1Data);
+
+
+                float[] fftbuffer = fftProcessor.ProcessFft(fifoBuffer.GetBufferContents());
+                fftDisplayControl1.UpdateFFTData(fftbuffer);
+            }
+
             signalDisplayControl1.UpdateChannel1Data(channel1Data);
         }
 
         // This will be called when new audio data is available for Channel 2
         private void ProcessAudioDataChannel2(float[] channel2Data, float[] channel2DummyData)
         {
+            if (running && !fftChannel1)
+            {
+                fifoBuffer.AppendBlock(channel2Data);
+
+
+                float[] fftbuffer = fftProcessor.ProcessFft(fifoBuffer.GetBufferContents());
+                fftDisplayControl1.UpdateFFTData(fftbuffer);
+            }
+
             signalDisplayControl1.UpdateChannel2Data(channel2Data);
         }
 
@@ -734,6 +762,15 @@ namespace SharpOscilloscope
                 signalDisplayControl1.SetSlopeThresholdChannel2(threshold);
                 signalDisplayControl1.SetTimeBetweenSamplesChannel2(tbs);
             }
+        }
+
+        //switch for fft
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+                fftChannel1 = true;
+            else
+                fftChannel1 = false;
         }
     }
 }

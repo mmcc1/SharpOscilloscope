@@ -20,7 +20,6 @@
  */
 
 using SharpOscilloscopeLib;
-using System;
 using static SharpOscilloscopeLib.AudioDeviceEnumerator;
 
 namespace SharpOscilloscope

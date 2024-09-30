@@ -36,6 +36,10 @@
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             splitContainer1 = new SplitContainer();
+            groupBox5 = new GroupBox();
+            button10 = new Button();
+            radioButton2 = new RadioButton();
+            radioButton1 = new RadioButton();
             groupBox4 = new GroupBox();
             button9 = new Button();
             button8 = new Button();
@@ -83,17 +87,24 @@
             label2 = new Label();
             label1 = new Label();
             button1 = new Button();
+            splitContainer2 = new SplitContainer();
             signalDisplayControl1 = new SharpOscilloscopeScope.SignalDisplayControl();
+            fftDisplayControl1 = new SharpOscilloscopeScope.FFTDisplayControl();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
+            groupBox5.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox3.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+            splitContainer2.Panel1.SuspendLayout();
+            splitContainer2.Panel2.SuspendLayout();
+            splitContainer2.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -158,6 +169,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(groupBox5);
             splitContainer1.Panel1.Controls.Add(groupBox4);
             splitContainer1.Panel1.Controls.Add(groupBox3);
             splitContainer1.Panel1.Controls.Add(groupBox2);
@@ -166,10 +178,54 @@
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(signalDisplayControl1);
+            splitContainer1.Panel2.Controls.Add(splitContainer2);
             splitContainer1.Size = new Size(1309, 846);
             splitContainer1.SplitterDistance = 317;
             splitContainer1.TabIndex = 2;
+            // 
+            // groupBox5
+            // 
+            groupBox5.Controls.Add(button10);
+            groupBox5.Controls.Add(radioButton2);
+            groupBox5.Controls.Add(radioButton1);
+            groupBox5.Location = new Point(12, 619);
+            groupBox5.Name = "groupBox5";
+            groupBox5.Size = new Size(298, 56);
+            groupBox5.TabIndex = 14;
+            groupBox5.TabStop = false;
+            groupBox5.Text = "FFT";
+            // 
+            // button10
+            // 
+            button10.Location = new Point(205, 20);
+            button10.Name = "button10";
+            button10.Size = new Size(75, 23);
+            button10.TabIndex = 2;
+            button10.Text = "Set";
+            button10.UseVisualStyleBackColor = true;
+            button10.Click += button10_Click;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(90, 22);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(78, 19);
+            radioButton2.TabIndex = 1;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Channel 2";
+            radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(6, 22);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(78, 19);
+            radioButton1.TabIndex = 0;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Channel 1";
+            radioButton1.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
@@ -637,7 +693,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(235, 619);
+            button1.Location = new Point(235, 726);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
@@ -645,14 +701,42 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // splitContainer2
+            // 
+            splitContainer2.Dock = DockStyle.Fill;
+            splitContainer2.FixedPanel = FixedPanel.Panel2;
+            splitContainer2.IsSplitterFixed = true;
+            splitContainer2.Location = new Point(0, 0);
+            splitContainer2.Name = "splitContainer2";
+            splitContainer2.Orientation = Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(signalDisplayControl1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(fftDisplayControl1);
+            splitContainer2.Size = new Size(988, 846);
+            splitContainer2.SplitterDistance = 697;
+            splitContainer2.TabIndex = 0;
+            // 
             // signalDisplayControl1
             // 
             signalDisplayControl1.BackColor = Color.Black;
             signalDisplayControl1.Dock = DockStyle.Fill;
             signalDisplayControl1.Location = new Point(0, 0);
             signalDisplayControl1.Name = "signalDisplayControl1";
-            signalDisplayControl1.Size = new Size(988, 846);
-            signalDisplayControl1.TabIndex = 0;
+            signalDisplayControl1.Size = new Size(988, 697);
+            signalDisplayControl1.TabIndex = 1;
+            // 
+            // fftDisplayControl1
+            // 
+            fftDisplayControl1.Dock = DockStyle.Fill;
+            fftDisplayControl1.Location = new Point(0, 0);
+            fftDisplayControl1.Name = "fftDisplayControl1";
+            fftDisplayControl1.Size = new Size(988, 145);
+            fftDisplayControl1.TabIndex = 0;
             // 
             // Form1
             // 
@@ -673,6 +757,8 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
+            groupBox5.ResumeLayout(false);
+            groupBox5.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
             groupBox3.ResumeLayout(false);
@@ -681,6 +767,10 @@
             groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+            splitContainer2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -696,7 +786,6 @@
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem settingsToolStripMenuItem;
         private Button button1;
-        private SharpOscilloscopeScope.SignalDisplayControl signalDisplayControl1;
         private GroupBox groupBox1;
         private ComboBox comboBox2;
         private ComboBox comboBox1;
@@ -743,5 +832,12 @@
         private TextBox textBox10;
         private Button button7;
         private Button button6;
+        private GroupBox groupBox5;
+        private RadioButton radioButton2;
+        private RadioButton radioButton1;
+        private SplitContainer splitContainer2;
+        private SharpOscilloscopeScope.SignalDisplayControl signalDisplayControl1;
+        private SharpOscilloscopeScope.FFTDisplayControl fftDisplayControl1;
+        private Button button10;
     }
 }
