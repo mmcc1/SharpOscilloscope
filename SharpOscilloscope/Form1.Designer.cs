@@ -37,7 +37,6 @@
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             splitContainer1 = new SplitContainer();
             groupBox5 = new GroupBox();
-            button10 = new Button();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
             groupBox4 = new GroupBox();
@@ -156,8 +155,7 @@
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(118, 17);
-            toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(0, 17);
             // 
             // splitContainer1
             // 
@@ -185,7 +183,6 @@
             // 
             // groupBox5
             // 
-            groupBox5.Controls.Add(button10);
             groupBox5.Controls.Add(radioButton2);
             groupBox5.Controls.Add(radioButton1);
             groupBox5.Location = new Point(12, 619);
@@ -194,16 +191,6 @@
             groupBox5.TabIndex = 14;
             groupBox5.TabStop = false;
             groupBox5.Text = "FFT";
-            // 
-            // button10
-            // 
-            button10.Location = new Point(205, 20);
-            button10.Name = "button10";
-            button10.Size = new Size(75, 23);
-            button10.TabIndex = 2;
-            button10.Text = "Set";
-            button10.UseVisualStyleBackColor = true;
-            button10.Click += button10_Click;
             // 
             // radioButton2
             // 
@@ -215,6 +202,7 @@
             radioButton2.TabStop = true;
             radioButton2.Text = "Channel 2";
             radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
             // 
             // radioButton1
             // 
@@ -226,6 +214,7 @@
             radioButton1.TabStop = true;
             radioButton1.Text = "Channel 1";
             radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
             // 
             // groupBox4
             // 
@@ -693,7 +682,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(235, 726);
+            button1.Location = new Point(235, 681);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
@@ -838,6 +827,5 @@
         private SplitContainer splitContainer2;
         private SharpOscilloscopeScope.SignalDisplayControl signalDisplayControl1;
         private SharpOscilloscopeScope.FFTDisplayControl fftDisplayControl1;
-        private Button button10;
     }
 }

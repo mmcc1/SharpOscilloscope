@@ -32,15 +32,10 @@ namespace SharpOscilloscopeScope
         public TriggerMode TriggerModeChannel2 { get; set; } = TriggerMode.None;
         public float TriggerLevelChannel1 { get; set; } = 0.3f;
         public float TriggerLevelChannel2 { get; set; } = 0.3f;
-        //public bool TriggerOnRisingEdge { get; set; } = true;
 
         public bool IsTriggeredChannel1 { get; set; } = false;
         public bool IsTriggeredChannel2 { get; set; } = false;
-        
-        //private float preTriggerBufferChannel1;
-        //private float preTriggerBufferChannel2;
-        //private bool waitingForTriggerChannel1 = true;
-        //private bool waitingForTriggerChannel2 = true;
+
 
         private DateTime pulseStartTimeChannel1;
         private DateTime pulseEndTimeChannel1;
@@ -224,13 +219,11 @@ namespace SharpOscilloscopeScope
         public void ResetTriggerChannel1()
         {
             IsTriggeredChannel1 = false;
-            //waitingForTriggerChannel1 = true;
         }
 
         public void ResetTriggerChannel2()
         {
             IsTriggeredChannel2 = false;
-            //waitingForTriggerChannel2 = true;
         }
     }
 }

@@ -21,7 +21,6 @@
 
 using SharpOscilloscopeLib;
 using SharpOscilloscopeScope;
-using static SharpOscilloscopeScope.FFTDisplayControl;
 
 namespace SharpOscilloscope
 {
@@ -764,13 +763,24 @@ namespace SharpOscilloscope
             }
         }
 
-        //switch for fft
-        private void button10_Click(object sender, EventArgs e)
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton1.Checked)
-                fftChannel1 = true;
-            else
-                fftChannel1 = false;
+            RadioButton rb = sender as RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked)
+                    fftChannel1 = true;
+            }
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton rb = sender as RadioButton;
+            if (rb != null)
+            {
+                if (rb.Checked)
+                    fftChannel1 = false;
+            }
         }
     }
 }
