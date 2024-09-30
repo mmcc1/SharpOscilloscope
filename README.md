@@ -10,4 +10,4 @@ Has support for:
 - Supports 16 bit, 48000 Hz input sources
 - FFT support
 
-![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI.jpg?raw=true)
+![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI2.jpg?raw=true)
