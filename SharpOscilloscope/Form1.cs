@@ -139,7 +139,7 @@ namespace SharpOscilloscope
                 running = false;
                 audioCapture.StopRecordingChannel1();
                 audioCapture2.StopRecordingChannel2();
-
+                signalDisplayControl1.ResetSingleChannel1();
 
                 button1.Text = "&Run";
             }
