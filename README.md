@@ -9,5 +9,6 @@ Has support for:
 - Independent triggers for each channel
 - Supports 16 bit, 48000 Hz input sources
 - FFT support
+- Function Generator
 
 ![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI2.jpg?raw=true)
