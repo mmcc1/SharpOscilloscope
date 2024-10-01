@@ -91,7 +91,10 @@
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "Settings";
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Settings";
+            TopMost = true;
             Load += Settings_Load;
             ResumeLayout(false);
             PerformLayout();

@@ -782,5 +782,18 @@ namespace SharpOscilloscope
                     fftChannel1 = false;
             }
         }
+
+        //Tools - Function Generator
+        private void functionGeneratorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FunctionGenerator fg = new FunctionGenerator();
+            fg.Show();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (running)
+                Stop();
+        }
     }
 }

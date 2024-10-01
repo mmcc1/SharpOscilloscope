@@ -33,6 +33,8 @@
             closeToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             settingsToolStripMenuItem = new ToolStripMenuItem();
+            toolsToolStripMenuItem = new ToolStripMenuItem();
+            functionGeneratorToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             splitContainer1 = new SplitContainer();
@@ -108,7 +110,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1309, 24);
@@ -142,6 +144,20 @@
             settingsToolStripMenuItem.Size = new Size(125, 22);
             settingsToolStripMenuItem.Text = "&Settings...";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
+            // 
+            // toolsToolStripMenuItem
+            // 
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { functionGeneratorToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new Size(46, 20);
+            toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // functionGeneratorToolStripMenuItem
+            // 
+            functionGeneratorToolStripMenuItem.Name = "functionGeneratorToolStripMenuItem";
+            functionGeneratorToolStripMenuItem.Size = new Size(180, 22);
+            functionGeneratorToolStripMenuItem.Text = "F&unction Generator";
+            functionGeneratorToolStripMenuItem.Click += functionGeneratorToolStripMenuItem_Click;
             // 
             // statusStrip1
             // 
@@ -738,6 +754,7 @@
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Sharp Oscilloscope";
+            FormClosing += Form1_FormClosing;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             statusStrip1.ResumeLayout(false);
@@ -827,5 +844,7 @@
         private SplitContainer splitContainer2;
         private SharpOscilloscopeScope.SignalDisplayControl signalDisplayControl1;
         private SharpOscilloscopeScope.FFTDisplayControl fftDisplayControl1;
+        private ToolStripMenuItem toolsToolStripMenuItem;
+        private ToolStripMenuItem functionGeneratorToolStripMenuItem;
     }
 }
