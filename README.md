@@ -11,4 +11,4 @@ Has support for:
 - FFT support
 - Function Generator
 
-![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI2.jpg?raw=true)
+![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/UI3.jpg?raw=true)
