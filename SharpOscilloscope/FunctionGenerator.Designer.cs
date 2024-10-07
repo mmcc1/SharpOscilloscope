@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FunctionGenerator));
             groupBox1 = new GroupBox();
             radioButton5 = new RadioButton();
             radioButton4 = new RadioButton();
@@ -240,8 +241,8 @@
             Controls.Add(button1);
             Controls.Add(groupBox1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FunctionGenerator";
-            ShowInTaskbar = false;
             Text = "Function Generator";
             FormClosing += FunctionGenerator_FormClosing;
             Load += FunctionGenerator_Load;
