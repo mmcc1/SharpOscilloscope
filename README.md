@@ -1,5 +1,6 @@
 # Sharp Oscilloscope 
 ![alt text](https://github.com/mmcc1/SharpOscilloscope/blob/master/SharpOscilloscope_w.ico?raw=true) 
+ 
 An open source windows-based 2-channel oscilloscope which uses audio inputs. 
 
 Has support for: 
